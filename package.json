@@ -1,0 +1,1 @@
+{"name":"scratch-for-discord-bot","version":"1.0.0","main":"bot.js","scripts":{"start":"node ."},"dependencies":{"discord.js":"^12.5.1","easy-json-database":"^1.3.0"}}
