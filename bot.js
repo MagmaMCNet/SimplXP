@@ -56,26 +56,49 @@ s4d.client.on('message', async (s4dmessage) => {
     }
     s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), (member_xp + 1));
     member_xp = member_xp + 1;
-    if (member_xp > 100) {
-      if (member_xp < 102) {
-        s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
-        member_level = member_level + 1;
-        s4dmessage.channel.send(
-                {
-                    embed: {
-                        title: (String(s4dmessage.member)),
-                        color: (colourRandom()),
-                        image: { url: null },
-                        description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
-                    }
-                }
-            );
+    if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) <= 1) {
+      if (member_xp > 50) {
+        if (member_xp < 52) {
+          s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
+          member_level = member_level + 1;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: (String(s4dmessage.member)),
+                          color: (colourRandom()),
+                          image: { url: null },
+                          description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
+                      }
+                  }
+              );
+        }
+      }
+    } else if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) >= 2) {
+      if (member_xp > 200) {
+        if (member_xp < 202) {
+          s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
+          member_level = member_level + 1;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: (String(s4dmessage.member)),
+                          color: (colourRandom()),
+                          image: { url: null },
+                          description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
+                      }
+                  }
+              );
+        }
       }
     }
     if ((s4dmessage.content) == '!!level') {
       s4dmessage.channel.send(String(([s4dmessage.member,', you are currently level: ',member_level].join(''))));
     } else if ((s4dmessage.content) == '!!xp') {
-      s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',99 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
+      if (member_level == 1) {
+        s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',50 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
+      } else if (member_level >= 2) {
+        s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',200 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
+      }
     }
   }
 
@@ -121,10 +144,15 @@ s4d.client.on('ready', async () => {
 });
 
 s4d.client.on('message', async (s4dmessage) => {
-  if (member_xp > 101) {
-    s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), 2);
-    member_level = member_level + 1;
-    member_xp = 2;
+  if (member_level == 1) {
+    if (member_xp > 50) {
+      if (member_xp < 52) {
+        s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), 2);
+        member_level = member_level + 1;
+        member_xp = 2;
+      }
+    }
+  } else if (false) {
   }
 
 });
@@ -163,7 +191,7 @@ s4d.client.on('message', async (s4dmessage) => {
 
 s4d.client.on('message', async (s4dmessage) => {
   if ((s4dmessage.content) == '!!Levelup') {
-    if ((s4dmessage.author.id) == s4d.database.get(String('OwnerID'))) {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
       s4dmessage.channel.send(
               {
@@ -183,7 +211,7 @@ s4d.client.on('message', async (s4dmessage) => {
                       title: (String(s4dmessage.member)),
                       color: '#cc0000',
                       image: { url: null },
-                      description: ('Sorry You Are Not Owner Of This Bot You can Not Do that Command' + '')
+                      description: ('Sorry You Do Not Have Perms To do That Command' + '')
                   }
               }
           );
@@ -195,6 +223,20 @@ s4d.client.on('message', async (s4dmessage) => {
 s4d.client.on('message', async (s4dmessage) => {
   if ((s4dmessage.content) == '!!ping') {
     s4dmessage.channel.send(String(('pong! - ' + String(s4d.client.ws.ping))));
+  }
+
+});
+
+s4d.client.on('message', async (s4dmessage) => {
+  if ((s4dmessage.content) == '!!kick') {
+    (s4dmessage.mentions.members.first()).kick();
+  }
+
+});
+
+s4d.client.on('message', async (s4dmessage) => {
+  if ((s4dmessage.content) == '!!ban') {
+    (s4dmessage.mentions.members.first()).ban();
   }
 
 });
