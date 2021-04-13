@@ -139,6 +139,17 @@ s4d.client.on('message', async (s4dmessage) => {
                 }
             }
         );
+  } else if ((s4dmessage.content) == '!!download') {
+    s4dmessage.channel.send(
+            {
+                embed: {
+                    title: (String(s4dmessage.member)),
+                    color: '#33ccff',
+                    image: { url: null },
+                    description: (' Download Simple Discord Bot - ' + 'https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/releases')
+                }
+            }
+        );
   } else if ((s4dmessage.content) == '!!ping') {
     s4dmessage.channel.send(String(('pong! - ' + String(s4d.client.ws.ping))));
   } else if ((s4dmessage.content) == '!!Levelup') {
@@ -196,7 +207,7 @@ s4d.client.on('message', async (s4dmessage) => {
                     title: 'Commands',
                     color: '#33ffff',
                     image: { url: null },
-                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
+                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','download Simple Bot - https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/releases','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
                 }
             }
         );
