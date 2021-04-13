@@ -183,7 +183,7 @@ s4d.client.on('message', async (s4dmessage) => {
                     title: 'Commands',
                     color: '#33ffff',
                     image: { url: null },
-                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID'].join(''))
+                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
                 }
             }
         );
@@ -246,8 +246,8 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
-    if ((s4dmessage.content) == '!!gameping') {
+  if ((s4dmessage.content) == '!!gameping') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       if (s4d.database.get(String('Game Ping')) == 'True') {
         s4d.database.set(String('Game Ping'), 'False');
         s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To False')));
@@ -255,28 +255,41 @@ s4d.client.on('message', async (s4dmessage) => {
         s4d.database.set(String('Game Ping'), 'True');
         s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To True')));
       }
+    } else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
     }
-  } else {
-    s4dmessage.channel.send(
-            {
-                embed: {
-                    title: (String(s4dmessage.member) + ''),
-                    color: '#ff0000',
-                    image: { url: null },
-                    description: 'Sorry You Do Not Have Admin Perms'
-                }
-            }
-        );
   }
 
 });
 
 s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
-    if ((s4dmessage.content) == '!!setgame') {
-      if (s4d.database.get(String('Game Ping')) == 'True') {
+  if ((s4dmessage.content) == '!!setgame') {
+    if (s4d.database.get(String('Game Ping')) == 'True') {
+      if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
         s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping Is True Do \'!!gameping\' To Disable')));
-      } else if (s4d.database.get(String('Game Ping')) == 'False') {
+      } else {
+        s4dmessage.channel.send(
+                {
+                    embed: {
+                        title: (String(s4dmessage.member) + ''),
+                        color: '#ff0000',
+                        image: { url: null },
+                        description: 'Sorry You Do Not Have Admin Perms'
+                    }
+                }
+            );
+      }
+    } else if (s4d.database.get(String('Game Ping')) == 'False') {
+      if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
         (s4dmessage.channel).send(String('Please Type What You want the Game To Be'));
         (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
            s4d.database.set(String('Bot Is Playing'), (s4d.reply));
@@ -293,8 +306,21 @@ s4d.client.on('message', async (s4dmessage) => {
           s4d.client.user.setActivity(String(s4d.database.get(String('Bot Is Playing'))));
 
          s4d.reply = null; }).catch(async (e) => { console.error(e);   s4dmessage.channel.send(String('No Message Reply'));
-         });}
-    } else if ((s4dmessage.content) == '!!create textchannel') {
+         });} else {
+        s4dmessage.channel.send(
+                {
+                    embed: {
+                        title: (String(s4dmessage.member) + ''),
+                        color: '#ff0000',
+                        image: { url: null },
+                        description: 'Sorry You Do Not Have Admin Perms'
+                    }
+                }
+            );
+      }
+    }
+  } else if ((s4dmessage.content) == '!!create textchannel') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       (s4dmessage.channel).send(String('Create A Channel Name:'));
       (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
          s4dmessage.channel.send(
@@ -312,7 +338,20 @@ s4d.client.on('message', async (s4dmessage) => {
             });
 
        s4d.reply = null; }).catch(async (e) => { console.error(e);   s4dmessage.channel.send(String('No Message Reply'));
-       });} else if ((s4dmessage.content) == '!!create category ') {
+       });} else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
+  } else if ((s4dmessage.content) == '!!create category ') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       (s4dmessage.channel).send(String('Create A Category  Name:'));
       (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
          s4dmessage.channel.send(
@@ -330,7 +369,20 @@ s4d.client.on('message', async (s4dmessage) => {
             });
 
        s4d.reply = null; }).catch(async (e) => { console.error(e);   s4dmessage.channel.send(String('No Message Reply'));
-       });} else if ((s4dmessage.content) == '!!create voicechannel') {
+       });} else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
+  } else if ((s4dmessage.content) == '!!create voicechannel') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       (s4dmessage.channel).send(String('Create A Channel Name:'));
       (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
          s4dmessage.channel.send(
@@ -348,35 +400,87 @@ s4d.client.on('message', async (s4dmessage) => {
             });
 
        s4d.reply = null; }).catch(async (e) => { console.error(e);   s4dmessage.channel.send(String('No Message Reply'));
-       });} else if ((s4dmessage.content) == '!!ban') {
-      s4dmessage.channel.send(String(('Banned ' + String(s4dmessage.mentions.members.first()))));
-      (s4dmessage.mentions.members.first()).ban();
-    } else if ((s4dmessage.content) == '!!kick') {
-      if (!s4d.database.has(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join(''))))) {
-        s4dmessage.channel.send(String('Do \'!!rk\' to add some one to be kicked'));
+       });} else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
+  } else if ((s4dmessage.content) == '!!ban') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
+      if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
+        s4dmessage.channel.send(String(('Banned ' + String(s4dmessage.mentions.members.first()))));
+        (s4dmessage.mentions.members.first()).ban();
       } else {
+        s4dmessage.channel.send(
+                {
+                    embed: {
+                        title: (String(s4dmessage.member) + ''),
+                        color: '#ff0000',
+                        image: { url: null },
+                        description: 'Sorry You Do Not Have Admin Perms'
+                    }
+                }
+            );
+      }
+    } else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
+  } else if ((s4dmessage.content) == '!!kick') {
+    if (!s4d.database.has(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join(''))))) {
+      s4dmessage.channel.send(String('Do \'!!rk\' to add some one to be kicked'));
+    } else {
+      if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
         s4dmessage.channel.send(String(('kicked ' + String(s4d.database.get(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join(''))))))));
         s4d.database.get(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join('')))).kick();
         s4d.database.delete(String(s4d.database.get(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join(''))))));
+      } else {
+        s4dmessage.channel.send(
+                {
+                    embed: {
+                        title: (String(s4dmessage.member) + ''),
+                        color: '#ff0000',
+                        image: { url: null },
+                        description: 'Sorry You Do Not Have Admin Perms'
+                    }
+                }
+            );
       }
-    } else if ((s4dmessage.content) == '!!rk') {
+    }
+  } else if ((s4dmessage.content) == '!!rk') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
       (s4dmessage.channel).send(String('Ready Kick:'));
       (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
          s4d.database.set(String((['RK-',s4dmessage.guild,'-',s4dmessage.member].join(''))), (s4d.reply));
 
        s4d.reply = null; }).catch(async (e) => { console.error(e);   s4dmessage.channel.send(String('No Message Reply'));
-       });}
-  } else {
-    s4dmessage.channel.send(
-            {
-                embed: {
-                    title: (String(s4dmessage.member) + ''),
-                    color: '#ff0000',
-                    image: { url: null },
-                    description: 'Sorry You Do Not Have Admin Perms'
-                }
-            }
-        );
+       });} else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
   }
 
 });
