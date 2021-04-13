@@ -104,17 +104,6 @@ s4d.client.on('message', async (s4dmessage) => {
 
 s4d.client.login(s4d.database.get(String('Token'))).catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
 
-s4d.client.on('ready', async () => {
-  if (s4d.database.get(String('Game Ping')) == 'True') {
-    s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
-  } else if (s4d.database.get(String('Game Ping')) == 'False') {
-    s4d.client.user.setActivity(String(s4d.database.get(String('Bot Is Playing'))));
-  } else {
-    s4d.client.user.setActivity(String('DB.json error'));
-  }
-
-});
-
 s4d.client.on('message', async (s4dmessage) => {
   if ((s4dmessage.content) == '!!ownerID') {
     s4dmessage.channel.send(
@@ -127,12 +116,7 @@ s4d.client.on('message', async (s4dmessage) => {
                 }
             }
         );
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!!version') {
+  } else if ((s4dmessage.content) == '!!version') {
     s4dmessage.channel.send(
             {
                 embed: {
@@ -143,6 +127,90 @@ s4d.client.on('message', async (s4dmessage) => {
                 }
             }
         );
+  }
+  if ((s4dmessage.content) == '!!info') {
+    s4dmessage.channel.send(
+            {
+                embed: {
+                    title: 'Bot Info',
+                    color: (colourRandom()),
+                    image: { url: null },
+                    description: (['Bot Version - ',s4d.database.get(String('Version')),'\n','Owner ID - ',s4d.database.get(String('OwnerID'))].join(''))
+                }
+            }
+        );
+  } else if ((s4dmessage.content) == '!!ping') {
+    s4dmessage.channel.send(String(('pong! - ' + String(s4d.client.ws.ping))));
+  } else if ((s4dmessage.content) == '!!Levelup') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
+      s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member)),
+                      color: (colourRandom()),
+                      image: { url: null },
+                      description: ('Leveled Up To ' + String(String(member_level + 1)))
+                  }
+              }
+          );
+      member_level = member_level + 1;
+    } else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member)),
+                      color: '#cc0000',
+                      image: { url: null },
+                      description: ('Sorry You Do Not Have Perms To do That Command' + '')
+                  }
+              }
+          );
+    }
+  } else if ((s4dmessage.content) == '!!gameping') {
+    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
+      if (s4d.database.get(String('Game Ping')) == 'True') {
+        s4d.database.set(String('Game Ping'), 'False');
+        s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To False')));
+      } else if (s4d.database.get(String('Game Ping')) == 'False') {
+        s4d.database.set(String('Game Ping'), 'True');
+        s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To True')));
+      }
+    } else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.member) + ''),
+                      color: '#ff0000',
+                      image: { url: null },
+                      description: 'Sorry You Do Not Have Admin Perms'
+                  }
+              }
+          );
+    }
+  }
+  if ((s4dmessage.content) == s4d.database.get(String('Help'))) {
+    s4dmessage.channel.send(
+            {
+                embed: {
+                    title: 'Commands',
+                    color: '#33ffff',
+                    image: { url: null },
+                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
+                }
+            }
+        );
+  }
+
+});
+
+s4d.client.on('ready', async () => {
+  if (s4d.database.get(String('Game Ping')) == 'True') {
+    s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
+  } else if (s4d.database.get(String('Game Ping')) == 'False') {
+    s4d.client.user.setActivity(String(s4d.database.get(String('Bot Is Playing'))));
+  } else {
+    s4d.client.user.setActivity(String('DB.json error'));
   }
 
 });
@@ -170,102 +238,6 @@ s4d.client.on('message', async (s4dmessage) => {
       s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), 2);
       member_level = member_level + 1;
       member_xp = 2;
-    }
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == s4d.database.get(String('Help'))) {
-    s4dmessage.channel.send(
-            {
-                embed: {
-                    title: 'Commands',
-                    color: '#33ffff',
-                    image: { url: null },
-                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
-                }
-            }
-        );
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!!info') {
-    s4dmessage.channel.send(
-            {
-                embed: {
-                    title: 'Bot Info',
-                    color: (colourRandom()),
-                    image: { url: null },
-                    description: (['Bot Version - ',s4d.database.get(String('Version')),'\n','Owner ID - ',s4d.database.get(String('OwnerID'))].join(''))
-                }
-            }
-        );
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!!Levelup') {
-    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
-      s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
-      s4dmessage.channel.send(
-              {
-                  embed: {
-                      title: (String(s4dmessage.member)),
-                      color: (colourRandom()),
-                      image: { url: null },
-                      description: ('Leveled Up To ' + String(String(member_level + 1)))
-                  }
-              }
-          );
-      member_level = member_level + 1;
-    } else {
-      s4dmessage.channel.send(
-              {
-                  embed: {
-                      title: (String(s4dmessage.member)),
-                      color: '#cc0000',
-                      image: { url: null },
-                      description: ('Sorry You Do Not Have Perms To do That Command' + '')
-                  }
-              }
-          );
-    }
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!!ping') {
-    s4dmessage.channel.send(String(('pong! - ' + String(s4d.client.ws.ping))));
-  }
-
-});
-
-s4d.client.on('message', async (s4dmessage) => {
-  if ((s4dmessage.content) == '!!gameping') {
-    if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
-      if (s4d.database.get(String('Game Ping')) == 'True') {
-        s4d.database.set(String('Game Ping'), 'False');
-        s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To False')));
-      } else if (s4d.database.get(String('Game Ping')) == 'False') {
-        s4d.database.set(String('Game Ping'), 'True');
-        s4dmessage.channel.send(String((String(s4dmessage.member) + ', Playing Ping To True')));
-      }
-    } else {
-      s4dmessage.channel.send(
-              {
-                  embed: {
-                      title: (String(s4dmessage.member) + ''),
-                      color: '#ff0000',
-                      image: { url: null },
-                      description: 'Sorry You Do Not Have Admin Perms'
-                  }
-              }
-          );
     }
   }
 
