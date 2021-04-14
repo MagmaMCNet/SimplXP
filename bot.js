@@ -1,4 +1,4 @@
-
+console.log("Simple Bot Starting Up")
                 let Discord;
                 let Database;
                 if(typeof window !== "undefined"){
@@ -216,6 +216,7 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('ready', async () => {
+    console.log("Simple Bot connected")
   if (s4d.database.get(String('Game Ping')) == 'True') {
     s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
   } else if (s4d.database.get(String('Game Ping')) == 'False') {
