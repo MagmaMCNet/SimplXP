@@ -1,4 +1,4 @@
-console.log("Simple Bot Starting Up")
+
                 let Discord;
                 let Database;
                 if(typeof window !== "undefined"){
@@ -37,7 +37,7 @@ console.log("Simple Bot Starting Up")
                         s4d.client.emit(packet.t, guild, channel, message, member, packet.d.emoji.name);
                     }
                 });
-                var member_xp, member_level;
+                var member_level, member_xp, member_xp_X;
 
 function colourRandom() {
   var num = Math.floor(Math.random() * Math.pow(2, 24));
@@ -45,64 +45,75 @@ function colourRandom() {
 }
 
 
+s4d.client.login(s4d.database.get(String('Token'))).catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
+
 s4d.client.on('message', async (s4dmessage) => {
-  member_xp = s4d.database.get(String(('xp-' + String(s4dmessage.author.id))));
-  member_level = s4d.database.get(String(('level-' + String(s4dmessage.author.id))));
-  if (!member_xp) {
-    member_xp = 0;
-  } else if (!member_level) {
-    member_level = 0;
+  if (!s4d.database.has(String(s4d.database.get(String(('XP-On-' + String((s4dmessage.guild || {}).id))))))) {
+    s4d.database.set(String(('XP-On-' + String((s4dmessage.guild || {}).id))), 'true');
   }
-  s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), (member_xp + 1));
-  member_xp = member_xp + 1;
-  if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) <= 1) {
-    if (member_xp > 50) {
-      if (member_xp < 52) {
-        s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
-        member_level = member_level + 1;
-        s4dmessage.channel.send(
-                {
-                    embed: {
-                        title: (String(s4dmessage.member)),
-                        color: (colourRandom()),
-                        image: { url: null },
-                        description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
-                    }
-                }
-            );
+  if (!s4d.database.has(String(s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id))))))) {
+    s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), 1);
+  }
+  if (s4d.database.has(String(s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id))))))) {
+    s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), member_xp_X);
+  }
+  if (s4d.database.get(String(('XP-On-' + String((s4dmessage.guild || {}).id)))) == 'true') {
+    member_xp = s4d.database.get(String(('xp-' + String(s4dmessage.author.id))));
+    member_level = s4d.database.get(String(('level-' + String(s4dmessage.author.id))));
+    if (!member_xp) {
+      member_xp = 0;
+    } else if (!member_level) {
+      member_level = 0;
+    }
+    s4d.database.set(String(('xp-' + String(s4dmessage.author.id))), (member_xp + s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id)))) * 1));
+    member_xp = member_xp + s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id)))) * 1;
+    if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) <= 1) {
+      if (member_xp > 50) {
+        if (member_xp < 52) {
+          s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
+          member_level = member_level + 1;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: (s4dmessage.author.username),
+                          color: (colourRandom()),
+                          image: { url: null },
+                          description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
+                      }
+                  }
+              );
+        }
+      }
+    } else if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) >= 2) {
+      if (member_xp > 200) {
+        if (member_xp < 210) {
+          s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
+          member_level = member_level + 1;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: (String(s4dmessage.author.username)),
+                          color: (colourRandom()),
+                          image: { url: null },
+                          description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
+                      }
+                  }
+              );
+        }
       }
     }
-  } else if (s4d.database.get(String(('level-' + String(s4dmessage.author.id)))) >= 2) {
-    if (member_xp > 200) {
-      if (member_xp < 210) {
-        s4d.database.set(String(('level-' + String(s4dmessage.author.id))), (member_level + 1));
-        member_level = member_level + 1;
-        s4dmessage.channel.send(
-                {
-                    embed: {
-                        title: (String(s4dmessage.member)),
-                        color: (colourRandom()),
-                        image: { url: null },
-                        description: (['Congratulations, ','','You Have Leveld Up to level ',member_level,'!!'].join(''))
-                    }
-                }
-            );
+    if ((s4dmessage.content) == '!!level') {
+      s4dmessage.channel.send(String(([s4dmessage.member,', you are currently level: ',member_level].join(''))));
+    } else if ((s4dmessage.content) == '!!xp') {
+      if (member_level <= 1) {
+        s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',50 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
+      } else if (member_level >= 2) {
+        s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',200 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
       }
-    }
-  }
-  if ((s4dmessage.content) == '!!level') {
-    s4dmessage.channel.send(String(([s4dmessage.member,', you are currently level: ',member_level].join(''))));
-  } else if ((s4dmessage.content) == '!!xp') {
-    if (member_level <= 1) {
-      s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',50 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
-    } else if (member_level >= 2) {
-      s4dmessage.channel.send(String(([s4dmessage.member,', You Need ',200 - member_xp,' More XP To Level Up To ',member_level + 1].join(''))));
     }
   }
 
 });
-
-s4d.client.login(s4d.database.get(String('Token'))).catch((e) => { s4d.tokenInvalid = true; s4d.tokenError = e; });
 
 s4d.client.on('message', async (s4dmessage) => {
   if ((s4dmessage.content) == '!!ownerID') {
@@ -135,7 +146,7 @@ s4d.client.on('message', async (s4dmessage) => {
                     title: 'Bot Info',
                     color: (colourRandom()),
                     image: { url: null },
-                    description: (['Bot Version - ',s4d.database.get(String('Version')),'\n','Owner ID - ',s4d.database.get(String('OwnerID'))].join(''))
+                    description: (['Bot Version - ',s4d.database.get(String('Version')),'\n','Owner ID - ',s4d.database.get(String('OwnerID')),'\n','',''].join(''))
                 }
             }
         );
@@ -143,7 +154,7 @@ s4d.client.on('message', async (s4dmessage) => {
     s4dmessage.channel.send(
             {
                 embed: {
-                    title: (String(s4dmessage.member)),
+                    title: (s4dmessage.author.username),
                     color: '#33ccff',
                     image: { url: null },
                     description: (' Download Simple Discord Bot - ' + 'https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/releases')
@@ -158,7 +169,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member)),
+                      title: (String(s4dmessage.author.username)),
                       color: (colourRandom()),
                       image: { url: null },
                       description: ('Leveled Up To ' + String(String(member_level + 1)))
@@ -170,7 +181,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member)),
+                      title: (String(s4dmessage.author.username)),
                       color: '#cc0000',
                       image: { url: null },
                       description: ('Sorry You Do Not Have Perms To do That Command' + '')
@@ -191,7 +202,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
@@ -207,7 +218,7 @@ s4d.client.on('message', async (s4dmessage) => {
                     title: 'Commands',
                     color: '#33ffff',
                     image: { url: null },
-                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','\n','Ready Kick Some one - !!rk','\n',' Kick The Ready Kick Person - !!kick','\n','Levelup One Level - !!Levelup','\n','download Simple Bot - https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/releases','\n','-Admin+-','\n','Set The Game of The Bot To Its Ping \'True,False\'- !!gameping','\n','Set The Game That The Bot Is Playing - !!setgame'].join(''))
+                    description: (['Help Command - ',s4d.database.get(String('Help')),'\n','XP Command - !!xp','\n','Level Command - !!level','\n','The Role Of The Member - !!role','\n',' -----','\n','Bot Info Command - !!info','\n','Bot Version Command - !!version','\n','Bot Owner Command - !!ownerID','\n','-Admin-','\n','Create a text channel - !!create textchannel','\n','Create a Voice channel - !!create voicechannel','\n','Create a category - !!create category','','','','','\n','Levelup One Level - !!Levelup','\n','download Simple Bot - !!download','\n','SteveDJ Setup Pannel - !!setup','\n','SteveDJ Setup Verify - !!setup verify','\n','SteveDJ Setup xp - !!setup xp'].join(''))
                 }
             }
         );
@@ -216,7 +227,6 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('ready', async () => {
-    console.log("Simple Bot connected")
   if (s4d.database.get(String('Game Ping')) == 'True') {
     s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
   } else if (s4d.database.get(String('Game Ping')) == 'False') {
@@ -256,6 +266,110 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('message', async (s4dmessage) => {
+  if ((s4dmessage.content) == '!!role') {
+    if (((s4dmessage.guild).owner || await (s4dmessage.guild).members.fetch((s4dmessage.guild).ownerID)) == (s4dmessage.member)) {
+      s4dmessage.channel.send(String('You Are Owner Of The Server'));
+    } else if (s4d.database.get(String('OwnerID')) == (s4dmessage.member)) {
+      s4dmessage.channel.send(String('You Are Owner Of The Bot'));
+    } else if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
+      s4dmessage.channel.send(String('You Are Admin Of The Server'));
+    } else {
+      s4dmessage.channel.send(String('You Are A member Of The Server'));
+    }
+  }
+  if ((s4dmessage.member).hasPermission('MANAGE_GUILD')) {
+    if ((s4dmessage.content) == '!!setup verify') {
+      if ((s4dmessage.member).hasPermission('MANAGE_GUILD')) {
+        (s4dmessage.channel).send(
+                {
+                    embed: {
+                        title: 'SteveDJ Setup pannel',
+                        color: '#ff6600',
+                        image: { url: null },
+                        description: 'Please Send The ID of The Role You want to Give The Member when Verified'
+                    }
+                }
+            );
+        (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+           s4dmessage.react('👍');s4d.database.set(String(('Member Role-' + String((s4dmessage.guild || {}).id))), (s4d.reply));
+          (s4dmessage.channel).send(String('Verify Code Eg: !!verify'));
+          (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+             s4d.database.set(String(('Member code-' + String((s4dmessage.guild || {}).id))), (s4d.reply));
+            s4dmessage.channel.send(String(('Verifying Code Set To ' + String(s4d.database.get(String(('Member code-' + String((s4dmessage.guild || {}).id))))))));
+
+           s4d.reply = null; }).catch(async (e) => { console.error(e);  });
+         s4d.reply = null; }).catch(async (e) => { console.error(e);  });}
+    }
+  }
+  if ((s4dmessage.content) == '!!setup xp') {
+    (s4dmessage.channel).send(
+            {
+                embed: {
+                    title: 'SteveDJ Setup pannel',
+                    color: '#ff6600',
+                    image: { url: null },
+                    description: (['Xp enabled = ',s4d.database.get(String(('XP-On-' + String((s4dmessage.guild || {}).id)))),'\n','Enable Or Disable Xp'].join(''))
+                }
+            }
+        );
+    (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+       if ((s4d.reply) == 'false') {
+        s4d.database.set(String(('XP-On-' + String((s4dmessage.guild || {}).id))), 'false');
+        s4dmessage.channel.send(String('Xp Has Been Disabled'));
+      } else if ((s4d.reply) == 'true') {
+        s4d.database.set(String(('XP-On-' + String((s4dmessage.guild || {}).id))), 'true');
+        s4dmessage.channel.send(String('Xp Has Been Enabled'));
+      } else {
+        s4dmessage.channel.send(String('Error Try true,false'));
+      }
+
+     s4d.reply = null; }).catch(async (e) => { console.error(e);  });}
+  if ((s4dmessage.content) == '!!settings xp') {
+    (s4dmessage.channel).send(
+            {
+                embed: {
+                    title: 'SteveDJ Setup pannel',
+                    color: '#ff6600',
+                    image: { url: null },
+                    description: (['Beta Warning','\n',['Xp Multiplier is ',member_xp_X,'Set New Multiplier To'].join('')].join(''))
+                }
+            }
+        );
+    (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+       member_xp_X = (s4d.reply);
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: 'SteveDJ Setup pannel',
+                      color: '#ff6600',
+                      image: { url: null },
+                      description: ('Xp Multiplier is ' + String(member_xp_X))
+                  }
+              }
+          );
+
+     s4d.reply = null; }).catch(async (e) => { console.error(e);  });}
+  if ((s4dmessage.content) == '!!setup') {
+    if ((s4dmessage.member).hasPermission('CREATE_INSTANT_INVITE')) {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: 'SteveDJ Setup pannel',
+                      color: '#ff6600',
+                      image: { url: null },
+                      description: (['Setup verify - !!setup verify','\n','Setup xp - !!setup xp','\n','xp settings - !!settings xp'].join(''))
+                  }
+              }
+          );
+    }
+  }
+  if ((s4dmessage.content) == s4d.database.get(String(('Member code-' + String((s4dmessage.guild || {}).id))))) {
+    if (s4d.database.has(String(('Member Role-' + String((s4dmessage.guild || {}).id))))) {
+      s4dmessage.delete();
+      (s4dmessage.member).roles.add(s4d.database.get(String(('Member Role-' + String((s4dmessage.guild || {}).id)))));
+      s4dmessage.channel.send(String((' Welcome to ' + String((s4dmessage.guild).name))));
+    }
+  }
   if ((s4dmessage.content) == '!!setgame') {
     if (s4d.database.get(String('Game Ping')) == 'True') {
       if ((s4dmessage.member).hasPermission('ADMINISTRATOR')) {
@@ -264,7 +378,7 @@ s4d.client.on('message', async (s4dmessage) => {
         s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#ff0000',
                         image: { url: null },
                         description: 'Sorry You Do Not Have Admin Perms'
@@ -280,7 +394,7 @@ s4d.client.on('message', async (s4dmessage) => {
           s4dmessage.channel.send(
                   {
                       embed: {
-                          title: (String(s4dmessage.member) + ''),
+                          title: (String(s4dmessage.author.username) + ''),
                           color: '#3366ff',
                           image: { url: null },
                           description: ('Game Has Been Set To Playing ' + String(s4d.reply))
@@ -294,7 +408,7 @@ s4d.client.on('message', async (s4dmessage) => {
         s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#ff0000',
                         image: { url: null },
                         description: 'Sorry You Do Not Have Admin Perms'
@@ -310,7 +424,7 @@ s4d.client.on('message', async (s4dmessage) => {
          s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#6600cc',
                         image: { url: null },
                         description: ('Created A Channel Called: ' + String(s4d.reply))
@@ -326,7 +440,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
@@ -341,7 +455,7 @@ s4d.client.on('message', async (s4dmessage) => {
          s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#3333ff',
                         image: { url: null },
                         description: ('Created A Category Called: ' + String(s4d.reply))
@@ -357,7 +471,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
@@ -372,7 +486,7 @@ s4d.client.on('message', async (s4dmessage) => {
          s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#3333ff',
                         image: { url: null },
                         description: ('Created A Channel Called: ' + String(s4d.reply))
@@ -388,7 +502,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
@@ -405,7 +519,7 @@ s4d.client.on('message', async (s4dmessage) => {
         s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#ff0000',
                         image: { url: null },
                         description: 'Sorry You Do Not Have Admin Perms'
@@ -417,7 +531,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
@@ -437,7 +551,7 @@ s4d.client.on('message', async (s4dmessage) => {
         s4dmessage.channel.send(
                 {
                     embed: {
-                        title: (String(s4dmessage.member) + ''),
+                        title: (String(s4dmessage.author.username) + ''),
                         color: '#ff0000',
                         image: { url: null },
                         description: 'Sorry You Do Not Have Admin Perms'
@@ -457,7 +571,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4dmessage.channel.send(
               {
                   embed: {
-                      title: (String(s4dmessage.member) + ''),
+                      title: (String(s4dmessage.author.username) + ''),
                       color: '#ff0000',
                       image: { url: null },
                       description: 'Sorry You Do Not Have Admin Perms'
