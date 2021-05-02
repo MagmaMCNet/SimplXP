@@ -1,6 +1,6 @@
 const mySecret = process.env['bot_token']
 const KeepAlive = require("./server.js")
-const env = require("./.env")
+
                 let Discord;
                 let Database;
                 if(typeof window !== "undefined"){
@@ -59,13 +59,25 @@ s4d.client.on('message', async (s4dmessage) => {
       s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 1);
       s4dmessage.channel.send(String('Something went wrong in counting your xp level restarting it.'));
     }
+    if (!s4d.database.has(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))))) {
+      member_xp = 1;
+      s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 1);
+    }
+    if (!(s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) % 1 == 0)) {
+      member_xp = 1;
+      s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 1);
+      s4dmessage.channel.send(String('Something went wrong in counting your xp level restarting it.'));
+    }
+    if (!s4d.database.has(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))))) {
+      s4d.database.set(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 0);
+    }
     if (!member_xp) {
       member_xp = 0;
     } else if (!member_level) {
       member_level = 0;
     }
-    member_x_mid = member_xp * s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id))));
-    s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), (member_x_mid + 1));
+    member_x_mid = member_xp + 1;
+    s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), (member_x_mid + s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id))))));
     if (!s4d.database.has(String(('command-' + String((s4dmessage.guild || {}).id))))) {
       s4dmessage.channel.send(String('automatically set prefix to !!'));
       s4d.database.set(String(('command-' + String((s4dmessage.guild || {}).id))), '!!');
@@ -77,7 +89,7 @@ s4d.client.on('message', async (s4dmessage) => {
       s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), 1);
     }
     if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) >= 1) {
-      if (member_xp >= member_level * 25) {
+      if (member_xp > member_level * 25) {
         s4d.database.set(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), (member_level + 1));
         member_level = member_level + 1;
         s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 1);
@@ -94,7 +106,7 @@ s4d.client.on('message', async (s4dmessage) => {
             );
       }
     } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) == 0) {
-      if (member_xp >= 10) {
+      if (member_xp > 10) {
         s4d.database.set(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), (member_level + 1));
         member_level = member_level + 1;
         s4d.database.set(String((['xp-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join(''))), 1);
@@ -236,23 +248,22 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('ready', async () => {
-
-    console.clear()
-    console.log(" ");
-    console.log("  -----------------------------");
-    console.log("   Simple Xp Bot Connected");
-    console.log(`   Base Command Prefix !!`);
-    console.log(`   Logged in as ${s4d.client.user.username}.`)
-    console.log(`   ${s4d.client.user.username} Is In ${s4d.client.guilds.cache.size} Servers`);
-    console.log(`   Config Located In db.json`)
-    console.log("  -----------------------------");
+  
+  console.clear()
+  console.log(" ");
+  console.log("  -----------------------------");
+  console.log("   Simple Xp Bot Connected");
+  console.log(`   Base Command Prefix !!`);
+  console.log(`   Logged in as ${s4d.client.user.username}.`)
+  console.log(`   ${s4d.client.user.username} Is In ${s4d.client.guilds.cache.size} Servers`);
+  console.log(`   Config Located In db.json`)
+  console.log("  -----------------------------");
 
   if (s4d.database.get(String('Game Ping')) == 'True') {
     s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
   } else if (s4d.database.get(String('Game Ping')) == 'False') {
     s4d.client.user.setActivity(String(s4d.database.get(String('Bot Is Playing'))));
   } else {
-    console.log("DB.json File Error Please Check it")
     s4d.client.user.setActivity(String('DB.json error'));
   }
 
@@ -428,23 +439,62 @@ s4d.client.on('message', async (s4dmessage) => {
                       title: 'SteveDJ Setup pannel',
                       color: '#ff6600',
                       image: { url: null },
-                      description: (['Beta Warning','\n',['Xp Multiplier is ',member_xp_X,' Set New Multiplier To'].join('')].join(''))
+                      description: (['Beta Warning','\n',['Xp Multiplier is ',member_xp_X,' Set New Multiplier To','\n','x2','\n','x4','\n','x6'].join('')].join(''))
                   }
               }
           );
       (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (1*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
-         member_xp_X = (s4d.reply);
-        s4dmessage.channel.send(
-                {
-                    embed: {
-                        title: 'SteveDJ Setup pannel',
-                        color: '#ff6600',
-                        image: { url: null },
-                        description: ('Xp Multiplier now is ' + String(member_xp_X))
-                    }
-                }
-            );
-        s4d.database.set(String(s4d.database.get(String(('XP-X-' + String((s4dmessage.guild || {}).id))))), member_xp_X);
+         if ((s4d.reply) == 'x2') {
+          member_xp_X = 2;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: 'SteveDJ Setup pannel',
+                          color: '#ff6600',
+                          image: { url: null },
+                          description: ('Xp Multiplier now is ' + String(2))
+                      }
+                  }
+              );
+          s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), 2);
+        } else if ((s4d.reply) == 'x4') {
+          member_xp_X = 4;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: 'SteveDJ Setup pannel',
+                          color: '#ff6600',
+                          image: { url: null },
+                          description: ('Xp Multiplier now is ' + String(4))
+                      }
+                  }
+              );
+          s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), 4);
+        } else if ((s4d.reply) == 'x6') {
+          member_xp_X = 6;
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: 'SteveDJ Setup pannel',
+                          color: '#ff6600',
+                          image: { url: null },
+                          description: ('Xp Multiplier now is ' + String(6))
+                      }
+                  }
+              );
+          s4d.database.set(String(('XP-X-' + String((s4dmessage.guild || {}).id))), 6);
+        } else {
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: 'SteveDJ Setup pannel',
+                          color: '#ff6600',
+                          image: { url: null },
+                          description: 'Error Please Pick: x2 x4 or x6'
+                      }
+                  }
+              );
+        }
 
        s4d.reply = null; }).catch(async (e) => { console.error(e);  });} else {
       s4dmessage.channel.send(
