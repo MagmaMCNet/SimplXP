@@ -3,13 +3,9 @@
   "OwnerID": "",
   "Game Ping": "True",
   "Bot Is Playing": "With Magma Block's",
-  "Version": "0.0.7.6",
+  "Version": "0.0.9",
+  "website": "https://YOURWEBSITE"
   "Ath": "SMLkaiellis08#0922",
-  "Bot Is Playing": "Version 0.0.7.6",
-  "B.F.L1": "Fixed Xp not working",
-  "B.F.L2": "Auto xp level amount needed",
-  "B.F.L3": "Spacing in some text and fixed spelling",
-  "B.F.L4": "Permision Reqiured for admin commands",
-  "B.F.L5": "Xp Multiplier fixed",
-  "F.B.L1": "Reaction verifying does not work",
+  "Bot Is Playing": "Version 0.0.9",
+  "F.B.L1": "Reaction verifying does not work"
 }
