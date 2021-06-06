@@ -286,7 +286,7 @@ s4d.client.on('message', async (s4dmessage) => {
 
 s4d.client.on('ready', async () => {
   if (s4d.database.get(String('Game Ping')) == 'True') {
-    s4d.client.user.setActivity(String(('Ping - ' + String(s4d.client.ws.ping))));
+    s4d.client.user.setActivity(String((['Ping - ',s4d.client.ws.ping,'ms'].join(''))));
   } else if (s4d.database.get(String('Game Ping')) == 'False') {
     s4d.client.user.setActivity(String(s4d.database.get(String('Bot Is Playing'))));
   } else {
@@ -533,13 +533,6 @@ s4d.client.on('message', async (s4dmessage) => {
                   }
               }
           );
-    }
-  }
-  if ((s4dmessage.content) == s4d.database.get(String(('Member code-' + String((s4dmessage.guild || {}).id))))) {
-    if (s4d.database.has(String(('Member Role-' + String((s4dmessage.guild || {}).id))))) {
-      s4dmessage.delete();
-      (s4dmessage.member).roles.add(s4d.database.get(String(('Member Role-' + String((s4dmessage.guild || {}).id)))));
-      s4dmessage.channel.send(String(([s4dmessage.author.username,', Welcome to ',(s4dmessage.guild).name].join(''))));
     }
   }
   if ((s4dmessage.content) == String(s4d.database.get(String(('command-' + String((s4dmessage.guild || {}).id))))) + 'setgame') {
@@ -808,15 +801,20 @@ s4d.client.on('message', async (s4dmessage) => {
 });
 
 s4d.client.on('message', async (s4dmessage) => {
+  if (!s4d.database.has(String('leaderboard-2-level'))) {
+    s4d.database.set(String('leaderboard-2-level'), 0);
+  } else if (!s4d.database.has(String(('leaderboard-1-level-' + String((s4dmessage.guild || {}).id))))) {
+    s4d.database.set(String(('leaderboard-1-level-' + String((s4dmessage.guild || {}).id))), 0);
+  }
   if ((s4dmessage.content) == String(s4d.database.get(String(('command-' + String((s4dmessage.guild || {}).id))))) + 'leaderboard') {
     s4dmessage.channel.send(
             {
                 embed: {
-                    title: 'level Leaderboard',
+                    title: 'Leader-Boards',
                     color: '#ff6600',
                     image: { url: null },
 
-                    description: (['1 - ',s4d.database.get(String('leaderboard-1-level')),' - ',s4d.database.get(String('leaderboard-1-user')),'\n','2 - ',s4d.database.get(String('leaderboard-2-level')),' - ',s4d.database.get(String('leaderboard-2-user')),'\n','3 - ',s4d.database.get(String('leaderboard-3-level')),' - ',s4d.database.get(String('leaderboard-3-user')),'\n','4 - ',s4d.database.get(String('leaderboard-4-level')),' - ',s4d.database.get(String('leaderboard-4-user')),'\n','5 - ',s4d.database.get(String('leaderboard-5-level')),' - ',s4d.database.get(String('leaderboard--user'))].join('')),
+                    description: (['- Public -','\n',s4d.database.get(String('leaderboard-2-user')),' - ',s4d.database.get(String('leaderboard-2-level')),' - ',s4d.database.get(String('leaderboard-2-server')),'\n','\n','- server -','\n',s4d.database.get(String(('leaderboard-1-user-' + String((s4dmessage.guild || {}).id)))),' - ',s4d.database.get(String(('leaderboard-1-level-' + String((s4dmessage.guild || {}).id))))].join('')),
                     footer: { text: null },
                     thumbnail: { url: null }
 
@@ -824,32 +822,130 @@ s4d.client.on('message', async (s4dmessage) => {
             }
         );
   }
-  if (!s4d.database.has(String('leaderboard-1-level'))) {
-    s4d.database.set(String('leaderboard-1-level'), 0);
-  } else if (!s4d.database.has(String('leaderboard-2-level'))) {
-    s4d.database.set(String('leaderboard-2-level'), 0);
-  } else if (!s4d.database.has(String('leaderboard-3-level'))) {
-    s4d.database.set(String('leaderboard-3-level'), 0);
-  } else if (!s4d.database.has(String('leaderboard-4-level'))) {
-    s4d.database.set(String('leaderboard-4-level'), 0);
-  } else if (!s4d.database.has(String('leaderboard-5-level'))) {
-    s4d.database.set(String('leaderboard-5-level'), 0);
-  }
-  if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-1-level'))) {
-    s4d.database.set(String('leaderboard-1-level'), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
-    s4d.database.set(String('leaderboard-1-user'), (s4dmessage.author.username));
-  } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-2-level'))) {
+  if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-2-level'))) {
     s4d.database.set(String('leaderboard-2-level'), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
     s4d.database.set(String('leaderboard-2-user'), (s4dmessage.author.username));
-  } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-3-level'))) {
-    s4d.database.set(String('leaderboard-3-level'), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
-    s4d.database.set(String('leaderboard-3-user'), (s4dmessage.author.username));
-  } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-4-level'))) {
-    s4d.database.set(String('leaderboard-4-level'), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
-    s4d.database.set(String('leaderboard-4-user'), (s4dmessage.author.username));
-  } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String('leaderboard-5-level'))) {
-    s4d.database.set(String('leaderboard-5-level'), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
-    s4d.database.set(String('leaderboard-5-user'), (s4dmessage.author.username));
+    s4d.database.set(String('leaderboard-2-server'), ((s4dmessage.guild || {}).name));
+  } else if (s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))) > s4d.database.get(String(('leaderboard-1-level-' + String((s4dmessage.guild || {}).id))))) {
+    s4d.database.set(String(('leaderboard-1-level-' + String((s4dmessage.guild || {}).id))), s4d.database.get(String((['level-',s4dmessage.author.id,'-Server-',(s4dmessage.guild || {}).id].join('')))));
+    s4d.database.set(String(('leaderboard-1-user-' + String((s4dmessage.guild || {}).id))), (s4dmessage.author.username));
+  }
+
+});
+
+s4d.client.on('message', async (s4dmessage) => {
+  if ((s4dmessage.content) == String(s4d.database.get(String(('command-' + String((s4dmessage.guild || {}).id))))) + 'setup verify') {
+    if ((s4dmessage.member).hasPermission('MANAGE_GUILD')) {
+      (s4dmessage.channel).send(
+              {
+                  embed: {
+                      title: 'setup - verify',
+                      color: '#ff6600',
+                      image: { url: null },
+
+                      description: (['1 - code','\n','2 - reaction'].join('')),
+                      footer: { text: null },
+                      thumbnail: { url: null }
+
+                  }
+              }
+          );
+      (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+         if ((s4d.reply) == '1') {
+          (s4dmessage.channel).send(
+                  {
+                      embed: {
+                          title: 'setup - verify',
+                          color: '#ff6600',
+                          image: { url: null },
+
+                          description: (['Channel for verifying','\n','ID not name','\n','eg: 848331656740864020'].join('')),
+                          footer: { text: null },
+                          thumbnail: { url: null }
+
+                      }
+                  }
+              );
+          (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+             s4d.database.set(String(('verify-channel-' + String((s4dmessage.guild || {}).name))), (s4d.reply));
+            (s4dmessage.channel).send(
+                    {
+                        embed: {
+                            title: 'setup - verify',
+                            color: '#ff6600',
+                            image: { url: null },
+
+                            description: (['Role given when verifyed','\n','ID not name','\n','eg: 841632567224696895'].join('')),
+                            footer: { text: null },
+                            thumbnail: { url: null }
+
+                        }
+                    }
+                );
+            (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+               s4d.database.set(String(('verify-role-' + String((s4dmessage.guild || {}).name))), (s4d.reply));
+              (s4dmessage.channel).send(
+                      {
+                          embed: {
+                              title: 'setup - verify',
+                              color: '#ff6600',
+                              image: { url: null },
+
+                              description: (['Role given when verifyed','\n','ID not name','\n','eg: 841632567224696895'].join('')),
+                              footer: { text: null },
+                              thumbnail: { url: null }
+
+                          }
+                      }
+                  );
+              (s4dmessage.channel).awaitMessages((m) => m.author.id === (s4dmessage.member).id, { time: (2*60*1000), max: 1 }).then(async (collected) => { s4d.reply = collected.first().content;
+                 s4d.database.set(String(('verify-code-' + String((s4dmessage.guild || {}).name))), (s4d.reply));
+
+               s4d.reply = null; }).catch(async (e) => { console.error(e);  });
+             s4d.reply = null; }).catch(async (e) => { console.error(e);  });
+           s4d.reply = null; }).catch(async (e) => { console.error(e);  });} else if ((s4d.reply) == '2') {
+        } else {
+          s4dmessage.channel.send(
+                  {
+                      embed: {
+                          title: 'setup - verify',
+                          color: '#ff0000',
+                          image: { url: null },
+
+                          description: (['"',s4d.reply,'" is not a command try 1,2'].join('')),
+                          footer: { text: null },
+                          thumbnail: { url: null }
+
+                      }
+                  }
+              );
+        }
+
+       s4d.reply = null; }).catch(async (e) => { console.error(e);  });} else {
+      s4dmessage.channel.send(
+              {
+                  embed: {
+                      title: (String(s4dmessage.author.username)),
+                      color: '#ff0000',
+                      image: { url: null },
+
+                      description: 'Sorry You Do Not Have Admin Perms',
+                      footer: { text: null },
+                      thumbnail: { url: null }
+
+                  }
+              }
+          );
+    }
+  }
+  if ((s4dmessage.content) == s4d.database.get(String(('verify-code-' + String((s4dmessage.guild || {}).id))))) {
+    if (((s4dmessage.channel || {}).id) == s4d.database.get(String(('verify-channel-' + String((s4dmessage.guild || {}).id))))) {
+      if (s4d.database.has(String(('verify-role-' + String((s4dmessage.guild || {}).id))))) {
+        s4dmessage.delete();
+        (s4dmessage.member).roles.add(s4d.database.get(String(('verify-role-' + String((s4dmessage.guild || {}).id)))));
+        s4dmessage.channel.send(String(([s4dmessage.author.username,', Welcome to ',(s4dmessage.guild).name].join(''))));
+      }
+    }
   }
 
 });
