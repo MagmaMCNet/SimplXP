@@ -1,3 +1,6 @@
+## Update
+Currently  going through a remake make take a while Find The Beta Releases In Beta Branch
+
 # Simple Leveling discord bot
 
 # installing
