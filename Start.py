@@ -25,13 +25,18 @@ if (not data["HasRan"]):
     print("First Time Setup")
     Token = input("Bot Token: ")
     dotenv.set_key(env_file, "TOKEN", Token)
-    os.system("npm i")
     
     data["HasRan"] = True
     
-    file_w = open("python.json", "w")
-    json.dump(data, file_w, indent=4)
-    file_w.close();
+    file = open("python.json", "w")
+    json.dump(data, file, indent=4)
+    file.close();
+    v = input("Running On Replit?")
+    file = open(".json", "w")
+    
+    os.system("cls")
+    time.sleep(0.5)
+    os.system("npm i")
     time.sleep(0.5)
     os.system("cls")
 
