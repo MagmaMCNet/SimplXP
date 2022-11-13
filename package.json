@@ -1,0 +1,34 @@
+{
+  "name": "simplxp",
+  "version": "2.0.0",
+  "description": "A Simple XP Discord Bot",
+  "main": "Main.js",
+  "scripts": {
+    "start": "nodemon Main.ts"
+  },
+  "keywords": [
+    "XP",
+    "Discord",
+    "Bot",
+    "Simple"
+  ],
+  "author": "MagmaMc",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SMLkaiellis08/Leveling-XP-discord-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/issues"
+  },
+  "homepage": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "easy-json-database": "^1.5.0",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1"
+  }
+}
