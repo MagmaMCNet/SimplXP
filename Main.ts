@@ -91,7 +91,7 @@ async function SendCommand(Command: DiscordJS.CommandInteraction)
             const embed = new DiscordJS.MessageEmbed()
             .setColor("#0099ff")
             .setTitle("Level")
-            .setDescription("Current Level Of '"+options.getUser('user')?.username+"': "+GetUser(Command.guildId, userid)["Level"]);
+            .setDescription(options.getUser('user')?.username+" Is Currently Level: "+GetUser(Command.guildId, userid)["Level"]);
             Command.reply({
                
                 embeds: [embed]
@@ -99,7 +99,7 @@ async function SendCommand(Command: DiscordJS.CommandInteraction)
         } else {
             Command.reply({
                 ephemeral: true,
-                content:`bruh` 
+                content:`That Is A Bot Not A User` 
             })
         }
     }
@@ -107,14 +107,21 @@ async function SendCommand(Command: DiscordJS.CommandInteraction)
     {
         if (!options.getUser('user')?.bot) {
             var userid: any = options.getUser("user")?.id;
-            UserCheck(Command.guild?.id, userid)
+            GetUser(Command.guild?.id, userid);
+            const user: any = GetUser(Command.guildId, userid);
+            const embeds:DiscordJS.MessageEmbed = new DiscordJS.MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle("XP")
+            .setDescription(options.getUser('user')?.username+" Has "+user["XP"]+
+                `XP,\n And Only Needs ${user["Level"]*user["Level"]*30*1.5/Number(process.env.XPMULTIPLIER)} More XP To Level Up To Level: ${user["Level"]+1}`);
             Command.reply({
-                content: `${GetUser(Command.guild?.id, userid)["XP"]}`,
+               
+                embeds: [embeds]
             })
         } else {
             Command.reply({
                 ephemeral: true,
-                content:`bruh` 
+                content:`That Is A Bot Not A User` 
             })
         }
     }
@@ -136,8 +143,8 @@ function AddXP(ServerID: any, UserID: string, Message: DiscordJS.Message)
 {
     var server:any = MMC.Database.get(ServerID.toString());
     var user = server["Users"][UserID];
-    user["XP"]+= 1;
-    if (user["Level"]*user["Level"]*20*1.5 <= user["XP"])
+    user["XP"] += 1;
+    if (user["Level"]*user["Level"]*30*1.5/Number(process.env.XPMULTIPLIER) <= user["XP"])
     {
         user["XP"] = 1;
         user["Level"] += 1;
