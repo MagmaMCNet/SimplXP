@@ -2,7 +2,9 @@
   "name": "simplxp",
   "version": "2.0.0",
   "description": "A Simple XP Discord Bot",
-  "main": "Main.js",
+  "target": "esnext",
+  "module": "commonjs",
+  "main": "Main.ts",
   "scripts": {
     "start": "nodemon Main.ts"
   },
@@ -23,12 +25,12 @@
   },
   "homepage": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot#readme",
   "dependencies": {
-    "colors": "^1.4.0",
-    "discord.js": "13.10.3",
+    "colors": "1.4.*",
+    "discord.js": "13.10.*",
     "dotenv": "^16.0.3",
     "easy-json-database": "^1.5.0",
-    "express": "^4.18.2",
+    "express": "4.18.*",
     "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1"
+    "ts-node": "10.9.1"
   }
 }

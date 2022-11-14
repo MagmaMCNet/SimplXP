@@ -24,8 +24,10 @@ if (not data["HasRan"]):
     time.sleep(0.5)
     print("First Time Setup")
     dotenv.set_key(env_file, "TOKEN", input("Bot Token: "))
-    dotenv.set_key(env_file, "PREFIX", input("Prefix: "))
-    
+    r = input("Are You Running This On Replit? [yes/no]: ")
+    dotenv.set_key(env_file, "REPLIT",r)
+    if (r == "yes"):
+        open("ReplitServer.js", "w").write("""const express=require('express');const server=express();server.all('/',(req, res)=> {res.send('Your Bot Is Running');});function StartRepl(){server.listen(5000, ()=>{console.log("Server is Ready!");});}module.exports = StartRepl;""")
     data["HasRan"] = True
     
     file = open("python.json", "w")

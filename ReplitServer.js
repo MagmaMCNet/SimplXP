@@ -1,1 +1,0 @@
-const express=require('express');const server=express();server.all('/',(req, res)=> {res.send('Your Bot Is Running');});function StartRepl(){server.listen(5000, ()=>{console.log("Server is Ready!");});}module.exports = StartRepl;

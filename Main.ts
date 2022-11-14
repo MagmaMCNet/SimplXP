@@ -8,7 +8,6 @@ const MMC =
     Client: new DiscordJS.Client({
         intents: [DiscordJS.Intents.FLAGS.GUILDS, DiscordJS.Intents.FLAGS.GUILD_MESSAGES]
     }),
-    G_Database: new Database("./.env.json"),
     Database: new Database("./Database.json"),
     GlobalPrefix: null,
 };
@@ -21,33 +20,104 @@ async function AddCommands()
     //#region Ping
     CommandHandler?.create({
         name: 'ping',
-        description: 'Gets The Ping Of The Bot',
+        description: 'Gets The Ping Of The Bot'
+    })
+    console.log(colors.data("Command: ping Added,"))
+    //#endregion
+
+    //#region level
+    CommandHandler?.create({
+        name: 'level',
+        description: 'Get The Current Level Of A User',
         options: [
             {
-                name: 'type',
-                description: "Get Ping Of API, Message",
+                name: 'user',
+                description: "User",
                 required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
 
             }
         ]
     })
+    console.log(colors.data("Command: level Added,"))
     //#endregion
 
-    console.log(colors.data("Command: ping Added,"))
+    //#region xp
+    CommandHandler?.create({
+        name: 'xp',
+        description: 'Get The Current XP Of A User',
+        options: [
+            {
+                name: 'user',
+                description: "User",
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
+
+            }
+        ]
+    })
+    console.log(colors.data("Command: XP Added,"))
+    //#endregion
+
 }
 
 
-async function SendCommand(Command: any) 
+async function SendCommand(Command: DiscordJS.CommandInteraction) 
 {
     const { commandName, options } = Command;
 
-    if (commandName == "ping" && options.getString('type') == "API") 
-    {
+    if (commandName == "ping") {
+        const embed = new DiscordJS.MessageEmbed()
+        .setColor("#0099ff")
+        .setTitle("Ping")
+        .setDescription("Message Ping: "+(Date.now()-Command.createdTimestamp).toString()+"ms\nAPI Ping: "+MMC.Client.ws.ping.toString()+"ms");
         Command.reply({
-            content: `${Math.round(MMC.Client.ws.ping)}ms`,
+           
+            embeds: [embed]
         })
     }
+
+    else if (commandName == "level") 
+    {
+        if (!options.getUser('user')?.bot) {
+
+            var userid: any = options.getUser("user")?.id;
+            GetUser(Command.guild?.id, userid);
+            
+            const embed = new DiscordJS.MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle("Level")
+            .setDescription("Current Level Of '"+options.getUser('user')?.username+"': "+GetUser(Command.guildId, userid)["Level"]);
+            Command.reply({
+               
+                embeds: [embed]
+            })
+        } else {
+            Command.reply({
+                ephemeral: true,
+                content:`bruh` 
+            })
+        }
+    }
+    else if (commandName == "xp") 
+    {
+        if (!options.getUser('user')?.bot) {
+            var userid: any = options.getUser("user")?.id;
+            UserCheck(Command.guild?.id, userid)
+            Command.reply({
+                content: `${GetUser(Command.guild?.id, userid)["XP"]}`,
+            })
+        } else {
+            Command.reply({
+                ephemeral: true,
+                content:`bruh` 
+            })
+        }
+    }
+}
+async function UserCheck(serverid: any, userid: any) 
+{
+    try {GetUser(serverid.id, userid)["Level"];}catch{AddNewUser(serverid.id, userid)}
 }
 async function OnMessage(message: DiscordJS.Message)
 {
@@ -70,8 +140,9 @@ function AddXP(ServerID: any, UserID: string)
     }
     MMC.Database.set(ServerID.toString(), server);
 }
-function GetUser(ServerID: any, UserID: string)
+function GetUser(ServerID: any, UserID: any)
 {
+    
     try {
     var server: any = MMC.Database.get(ServerID.toString());
     if (UserID != null) {
@@ -106,6 +177,16 @@ function AddNewUser(ServerID: any, UserID: string)
 
 // Startup
 dotenv.config();
+var isReplit: boolean = false;
+if (process.env.REPLIT?.toLowerCase() == "yes") {
+    isReplit = true;
+}
+else if (process.env.REPLIT?.toLowerCase() == "true") {
+    isReplit = true;
+}
+else if (process.env.REPLIT?.toLowerCase() == "1") {
+    isReplit = true;
+}
 colors.setTheme(
 {
     info: 'rainbow',
@@ -133,7 +214,7 @@ MMC.Client.on('ready', () =>
 });
 
 
-MMC.Client.on('message', async (message) => {OnMessage(message)});
+MMC.Client.on('messageCreate', async (message) => {OnMessage(message)});
 MMC.Client.on('interactionCreate', async (inter) => {
     if(!inter.isCommand()){
         return;
@@ -142,5 +223,18 @@ MMC.Client.on('interactionCreate', async (inter) => {
 })
 
 
+/* Checking if the bot is running on repl.it and if it is it will start a server on port 5454. */
 
 MMC.Client.login(process.env.TOKEN);
+if (isReplit) {
+    const express = require('express');
+    const server = express();
+    server.all('/', (req:any, res:any) => {
+        res.send('Your Bot Is Running');
+    });
+
+    server.listen(5454, () => {
+        console.log("Server is Ready!");
+    });
+
+}
