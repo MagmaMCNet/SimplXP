@@ -11,7 +11,7 @@ if (data["Branch"]  == "main"):
     print("Currently Stable Does Support AutoUpdater")
 elif (data["Branch"] == "beta"):
     print("Checking For Updates")
-    V = json.loads(Request.get("https://raw.githubusercontent.com/SMLkaiellis08/Leveling-XP-discord-bot/beta/python.json").json)  # type: ignore
+    V = json.loads(str(Request.get("https://raw.githubusercontent.com/SMLkaiellis08/Leveling-XP-discord-bot/Beta/python.json").text))["Version"]
     if (float(V) > float(data["Version"])):
         print("Update Available", data["BetaUrl"])
         time.sleep(1.5)
@@ -23,16 +23,14 @@ if (not data["HasRan"]):
     os.system("cls")
     time.sleep(0.5)
     print("First Time Setup")
-    Token = input("Bot Token: ")
-    dotenv.set_key(env_file, "TOKEN", Token)
+    dotenv.set_key(env_file, "TOKEN", input("Bot Token: "))
+    dotenv.set_key(env_file, "PREFIX", input("Prefix: "))
     
     data["HasRan"] = True
     
     file = open("python.json", "w")
     json.dump(data, file, indent=4)
-    file.close();
-    v = input("Running On Replit?")
-    file = open(".json", "w")
+    file.close()
     
     os.system("cls")
     time.sleep(0.5)
