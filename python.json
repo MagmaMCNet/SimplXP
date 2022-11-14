@@ -1,7 +1,9 @@
 {
-    "Version": 0.01,
+    "Version": 0.02,
     "BetaUrl": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/tree/beta",
-    "StableUrl": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/",
+    "StableUrl": "https://github.com/SMLkaiellis08/Leveling-XP-discord-bot/tree/main",
+    "RawBetaUrl": "https://raw.githubusercontent.com/SMLkaiellis08/Leveling-XP-discord-bot/beta",
+    "RawStableUrl": "https://raw.githubusercontent.com/SMLkaiellis08/Leveling-XP-discord-bot/main",
     "Branch": "Stable",
     "HasRan": false
 }

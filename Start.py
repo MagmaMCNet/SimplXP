@@ -9,7 +9,7 @@ data = json.load(file_r)
 file_r.close()
 if (data["Branch"]  == "Stable"):
     print("Checking For Updates")
-    V = json.loads(str(Request.get(data["StableUrl"]+"/python.json").text))["Version"]
+    V = json.loads(str(Request.get(data["RawStableUrl"]+"/python.json").text))["Version"]
     if (float(V) > float(data["Version"])):
         print("Update Available", data["StableUrl"])
         time.sleep(1.5)
@@ -18,7 +18,7 @@ if (data["Branch"]  == "Stable"):
         time.sleep(1)
 elif (data["Branch"] == "beta"):
     print("Checking For Updates")
-    V = json.loads(str(Request.get(data["BetaUrl"]+"/python.json").text))["Version"]
+    V = json.loads(str(Request.get(data["RawBetaUrl"]+"/python.json").text))["Version"]
     if (float(V) > float(data["Version"])):
         print("Update Available", data["BetaUrl"])
         time.sleep(1.5)
