@@ -2,7 +2,9 @@
 import DiscordJS, { User } from 'discord.js'
 import dotenv from 'dotenv';
 import Database from "easy-json-database";
-var colors = require('colors');
+const express = require('express');
+const chalk = require('chalk');
+import chalkAnimation from 'chalk-animation';
 const MMC = 
 {
     Client: new DiscordJS.Client({
@@ -14,19 +16,24 @@ const MMC =
 
 // Main
 var CommandHandler: any;
+
+async function CreateCommand(func: any, Name: string)
+{
+    CommandHandler?.create(func);
+    console.log(chalk.cyan('Command')+": "+ chalk.blue(Name)+chalk.cyan(" Added,"))
+}
+
 async function AddCommands() 
 {
-
     //#region Ping
-    CommandHandler?.create({
+    CreateCommand({
         name: 'ping',
         description: 'Gets The Ping Of The Bot'
-    })
-    console.log(colors.data("Command: ping Added,"))
+    }, "Ping")
     //#endregion
 
     //#region level
-    CommandHandler?.create({
+    CreateCommand({
         name: 'level',
         description: 'Get The Current Level Of A User',
         options: [
@@ -38,12 +45,11 @@ async function AddCommands()
 
             }
         ]
-    })
-    console.log(colors.data("Command: level Added,"))
+    }, "Level")
     //#endregion
 
     //#region xp
-    CommandHandler?.create({
+    CreateCommand({
         name: 'xp',
         description: 'Get The Current XP Of A User',
         options: [
@@ -55,10 +61,8 @@ async function AddCommands()
 
             }
         ]
-    })
-    console.log(colors.data("Command: XP Added,"))
+    }, "XP")
     //#endregion
-
 }
 
 
@@ -125,18 +129,23 @@ async function OnMessage(message: DiscordJS.Message)
     var UserID:string = message.author.id;
     if (message.author.bot) return "IsBot";
     if (GetUser(Server, UserID) == null) return
-    AddXP(Server, UserID);
+    AddXP(Server, UserID, message);
 }
 
-function AddXP(ServerID: any, UserID: string)
+function AddXP(ServerID: any, UserID: string, Message: DiscordJS.Message)
 {
     var server:any = MMC.Database.get(ServerID.toString());
     var user = server["Users"][UserID];
     user["XP"]+= 1;
-    if (user["Level"]*user["Level"]*100*1.5 <= user["XP"])
+    if (user["Level"]*user["Level"]*20*1.5 <= user["XP"])
     {
         user["XP"] = 1;
-        user["Leve"] += 1;
+        user["Level"] += 1;
+        const embed = new DiscordJS.MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle("LevelUp")
+            .setDescription("<@" + Message.author.id + ">"+" Just Leveled Up To: "+user["Level"]);
+        Message.channel.send({ embeds: [embed] });
     }
     MMC.Database.set(ServerID.toString(), server);
 }
@@ -181,36 +190,43 @@ var isReplit: boolean = false;
 if (process.env.REPLIT?.toLowerCase() == "yes") {
     isReplit = true;
 }
-else if (process.env.REPLIT?.toLowerCase() == "true") {
-    isReplit = true;
-}
-else if (process.env.REPLIT?.toLowerCase() == "1") {
-    isReplit = true;
-}
-colors.setTheme(
-{
-    info: 'rainbow',
-    prompt: 'grey',
-    data: 'blue',
-    warn: 'yellow',
-    error: 'red'
-});
 
-MMC.Client.on('ready', () =>
+
+MMC.Client.on('ready', async () =>
 {
     if (MMC.Client.user?.bot) {
         console.clear();
-        console.log("Logged In With Bot: '"+colors.info(`${MMC.Client.user?.username}`)+"'");
+        console.log("Logged In With Bot: '"+chalk.blue(`${MMC.Client.user?.username}`)+"'");
     } else {
         console.clear();
-        console.log(colors.error("Error User Is Not A Bot"));
-        console.log(colors.warn(MMC.Client.user));
+        console.log(chalk.rgb(255,10,0)("Error User Is Not A Bot"));
+        console.log(chalk.rgb(250,70,0)(MMC.Client.user));
         process.exit(1);
     }
-    console.log('---------------------');
-    console.log("Adding Commands");
-    CommandHandler = MMC.Client.application?.commands;
-    AddCommands();
+    var isready: boolean = true;
+    if (isReplit) {
+        isready=false;
+        const server = express();
+        server.all('/', (req:any, res:any) => {
+            res.send('Your Bot Is Running');
+        });
+        server.listen(5000, () => {
+            isready = true;
+        });
+    }
+    function checkFlag() {
+        if(isready === false) {
+           setTimeout(checkFlag, 100);
+        } else {
+            console.log("Listening On Port: '"+chalk.blue('5000')+"'");
+            chalkAnimation.rainbow('---------------------').render();
+            console.log("Adding Commands");
+            CommandHandler = MMC.Client.application?.commands;
+            AddCommands();
+        }
+    }
+    checkFlag();
+    
 });
 
 
@@ -223,18 +239,4 @@ MMC.Client.on('interactionCreate', async (inter) => {
 })
 
 
-/* Checking if the bot is running on repl.it and if it is it will start a server on port 5454. */
-
 MMC.Client.login(process.env.TOKEN);
-if (isReplit) {
-    const express = require('express');
-    const server = express();
-    server.all('/', (req:any, res:any) => {
-        res.send('Your Bot Is Running');
-    });
-
-    server.listen(5454, () => {
-        console.log("Server is Ready!");
-    });
-
-}
