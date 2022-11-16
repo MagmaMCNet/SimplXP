@@ -3,8 +3,7 @@ $m = Read-Host -Prompt 'Commit Message: '
 $Tag = Read-Host -Prompt 'Tag Name: '
 Clear-Host
 Write-Output "Adding Files"
-Remove-Item -Path "log.log"
-git add . >log.log
+git add .
 Write-Output "Commiting"
 git commit -m $m >log.log
 Write-Output "-Commited-"
