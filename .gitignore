@@ -3,3 +3,6 @@
 package-lock.json
 Database.json
 ReplitServer.js
+/dist/
+*.spec
+_*_
