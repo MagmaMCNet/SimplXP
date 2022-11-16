@@ -4,4 +4,4 @@ Write-Output "Adding Files"
 git add . >log.log
 Write-Output "Commiting"
 git commit -m $m >log.log
-Write-Output  "Commited"
+Write-Output  "-Commited-"
