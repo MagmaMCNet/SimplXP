@@ -12,3 +12,4 @@ git tag -a R$Tag -m "Auto Publish" >log.log
 git push origin R$Tag >log.log
 git push >log.log
 Write-Output "-Published-"
+Remove-Item -Path "log.log"

@@ -5,3 +5,4 @@ git add . >log.log
 Write-Output "Commiting"
 git commit -m $m >log.log
 Write-Output  "-Commited-"
+Remove-Item -Path "log.log"
