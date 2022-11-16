@@ -1,4 +1,6 @@
 # SimplXP
+[![Build status](https://ci.appveyor.com/api/projects/status/poeixck82gle58ub?svg=true)](https://ci.appveyor.com/project/SMLkaiellis08/simplxp)
+
 
 ## Replit Setup
 Install Modules
