@@ -4,6 +4,7 @@
 Install Modules
 ``` terminal
 npm install
+npm install ts-node --global
 ```
 
 Create A New File Called .env
@@ -17,5 +18,6 @@ npm run start
 ```
 ## Python Setup
 ``` terminal
-py Start.py
+npm install ts-node --global
+python3 Start.py
 ```
