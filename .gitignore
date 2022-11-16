@@ -6,3 +6,4 @@ ReplitServer.js
 /dist/
 *.spec
 _*_
+*.log
