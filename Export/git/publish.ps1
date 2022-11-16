@@ -7,6 +7,7 @@ git add . >log.log
 Write-Output "Commiting"
 git commit -m $m >log.log
 Write-Output "-Commited-"
+Remove-Item -Path "log.log"
 Write-Output "Publishing"
 git tag -a R$Tag -m "Auto Publish" >log.log
 git push origin R$Tag >log.log
