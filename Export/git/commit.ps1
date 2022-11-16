@@ -1,7 +1,7 @@
 Clear-Host
 $m = Read-Host -Prompt 'Commit Message: '
-Write-Debug "Adding Files"
+Write-Output "Adding Files"
 git add .
-Write-Debug "Commiting"
-git commit -m $m >null
-Write-Debug "Commited"
+Write-Output "Commiting"
+git commit -m $m
+Write-Output  "Commited"
