@@ -2,12 +2,11 @@ import requests as Request
 import json, time, os, dotenv, sys, shutil, pathlib
 
 if getattr(sys, 'frozen', False):
-    print("asds")
     if (not os.path.exists(".env")):
-        shutil.copyfile(os.path.join(os.path.dirname(__file__))+"\\python.json", "python.json")
-        
+        shutil.copy(os.path.join(os.path.dirname(__file__))+"\\json\\", "json\\")
+    
+    shutil.copy(os.path.join(os.path.dirname(__file__))+"\\src\\", "src\\")
     shutil.copyfile(os.path.join(os.path.dirname(__file__))+"\\package.json", "package.json")
-    shutil.copyfile(os.path.join(os.path.dirname(__file__))+"\\Main.ts", "Main.ts")
     os.chdir(pathlib.Path(sys.executable).parent)
 
 
@@ -17,12 +16,12 @@ if (not os.path.exists(".env")):
 env_file = dotenv.find_dotenv()
 dotenv.load_dotenv(env_file)
 
-file_r = open("python.json", )
+file_r = open("JSON/python.json", )
 data = json.load(file_r)
 file_r.close()
 if (data["Branch"]  == "Stable"):
     print("Checking For Updates")
-    V = json.loads(str(Request.get(data["RawStableUrl"]+"/python.json").text))["Version"]
+    V = json.loads(str(Request.get(data["RawStableUrl"]+"/JSON/python.json").text))["Version"]
     if (float(V) > float(data["Version"])):
         print("Update Available", data["StableUrl"])
         time.sleep(1)
@@ -31,7 +30,7 @@ if (data["Branch"]  == "Stable"):
         time.sleep(0.5)
 elif (data["Branch"] == "beta"):
     print("Checking For Updates")
-    V = json.loads(str(Request.get(data["RawBetaUrl"]+"/python.json").text))["Version"]
+    V = json.loads(str(Request.get(data["RawBetaUrl"]+"/JSON/python.json").text))["Version"]
     if (float(V) > float(data["Version"])):
         print("Update Available", data["BetaUrl"])
         time.sleep(1)
@@ -44,7 +43,7 @@ if (not data["HasRan"]):
     time.sleep(0.5)
     print("--------First Time Setup--------")
     dotenv.set_key(env_file, "TOKEN", input("Bot Token: "))
-    dotenv.set_key(env_file, "XPMULTIPLIER", input("Xp Multipler [1, 2, ..]: "))
+    dotenv.set_key(env_file, "XPMULTIPLIER", input("Xp Multipler [5, 10, 20, ..]: "))
     dotenv.set_key(env_file, "REPLIT", input("Running On Replit [yes/no]: "))
     dotenv.set_key(env_file, "PORT", input("Port: "))
     data["HasRan"] = True
