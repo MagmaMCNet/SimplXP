@@ -48,7 +48,7 @@ if (not data["HasRan"]):
     dotenv.set_key(env_file, "PORT", input("Port: "))
     data["HasRan"] = True
     
-    file = open("python.json", "w")
+    file = open("JSON/python.json", "w")
     json.dump(data, file, indent=4)
     file.close()
     
